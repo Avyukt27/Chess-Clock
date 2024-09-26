@@ -187,14 +187,12 @@ function start() {
       blackTimeSeconds.value--;
       setTimeReadable();
       if (blackTimeSeconds.value <= 0) {
-        console.log("Black Lose");
         gameOver();
       }
     } else if (whiteTurn.value) {
       whiteTimeSeconds.value--;
       setTimeReadable();
       if (whiteTimeSeconds.value <= 0) {
-        console.log("White Lose");
         gameOver();
       }
     }
