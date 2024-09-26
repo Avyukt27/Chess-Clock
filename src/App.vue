@@ -2,19 +2,19 @@
   <div
     class="min-h-screen bg-slate-100 text-black dark:bg-slate-900 dark:text-white grid grid-cols-3 grid-rows-[max-content_1fr] justify-center items-center grid-flow-row"
   >
-    <h1 class="text-center text-3xl font-bold p-4 col-span-3">
-      Welcome to the Chess Clock!
+    <h1 class="text-center text-3xl font-bold p-4 col-span-3" v-show="!started">
+      Welcome to the Chess Clock
     </h1>
 
     <label
-      class="text-center text-2xl font-bold font-mono p-6 border-gray-500 border-solid border-2 col-start-1 row-start-2 self-end"
+      class="text-center text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold font-mono p-6 border-gray-500 border-solid border-2 col-start-1 row-start-2 self-end"
       for="set-time-seconds"
       v-if="!started"
     >
       Start Time
     </label>
     <select
-      class="text-center text-2xl bg-black text-white font-bold font-mono p-6 my-4 border-gray-500 border-solid border-2 row-start-3 col-start-1 self-start"
+      class="text-center text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl bg-black text-white font-bold font-mono p-6 my-4 border-gray-500 border-solid border-2 row-start-3 col-start-1 self-start"
       id="set-time-seconds"
       v-model="selectedTimeSeconds"
       v-if="!started"
@@ -29,14 +29,14 @@
 
     <!-- Dropdown to change addingInterval -->
     <label
-      class="text-center text-2xl font-bold font-mono p-6 border-gray-500 border-solid border-2 col-start-3 row-start-2 self-end"
+      class="text-center text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold font-mono p-6 border-gray-500 border-solid border-2 col-start-3 row-start-2 self-end"
       for="interval-select"
       v-if="!started"
     >
       Interval
     </label>
     <select
-      class="text-center text-2xl bg-black text-white font-bold font-mono p-6 my-4 border-gray-500 border-solid border-2 row-start-3 col-start-3 self-start"
+      class="text-center text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl bg-black text-white font-bold font-mono p-6 my-4 border-gray-500 border-solid border-2 row-start-3 col-start-3 self-start"
       id="interval-select"
       v-model="addingInterval"
       v-if="!started"
@@ -48,7 +48,7 @@
     </select>
 
     <button
-      class="text-center text-2xl font-bold font-mono p-6 mx-96 border-gray-500 border-solid border-2 col-span-3"
+      class="text-center text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold font-mono p-6 border-gray-500 border-solid border-2 col-span-3"
       @click="start"
       v-if="!started"
     >
@@ -56,15 +56,18 @@
     </button>
 
     <button
-      :class="[blackTurn ? activeBlack : inactiveBlack]"
-      @click="setTurnWhite"
-      v-if="started"
+      :class="{
+        [blackTurn ? activeBlack : inactiveBlack]: started,
+        [blackWin ? win : lose]: over,
+      }"
+      @click="setTurn"
+      v-show="started"
     >
       {{ blackTimeReadable }}
     </button>
 
     <button
-      class="text-center text-2xl font-bold font-mono p-6 mx-5 border-gray-500 border-solid border-2"
+      class="text-center text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold font-mono p-6 mx-5 border-gray-500 border-solid border-2"
       @click="stop"
       v-if="started"
     >
@@ -72,9 +75,12 @@
     </button>
 
     <button
-      :class="[whiteTurn ? activeWhite : inactiveWhite]"
-      @click="setTurnBlack"
-      v-if="started"
+      :class="{
+        [whiteTurn ? activeWhite : inactiveWhite]: started,
+        [whiteWin ? win : lose]: over,
+      }"
+      @click="setTurn"
+      v-show="started"
     >
       {{ whiteTimeReadable }}
     </button>
@@ -87,6 +93,7 @@ import { onClickOutside } from "@vueuse/core";
 
 // Reactive state variables
 const started = ref(false);
+const over = ref(false);
 const whiteTurn = ref(true);
 const blackTurn = ref(false);
 
@@ -102,11 +109,28 @@ const activeWhite = ref("activeWhite");
 const activeBlack = ref("activeBlack");
 const inactiveWhite = ref("inactiveWhite");
 const inactiveBlack = ref("inactiveBlack");
+const win = ref("win");
+const lose = ref("lose");
+
+const whiteWin = ref(false);
+const blackWin = ref(false);
 
 const dropdownOpen = ref(false);
 const target = ref(null);
 
 let timerInterval = null;
+
+function gameOver() {
+  over.value = true;
+  clearInterval(timerInterval);
+  if (whiteTurn.value) {
+    blackWin.value = true;
+    whiteWin.value = false;
+  } else if (blackTurn.value) {
+    whiteWin.value = true;
+    blackTurn.value = false;
+  }
+}
 
 // Function to set time in readable format
 function setTimeReadable() {
@@ -139,17 +163,12 @@ function setTimeReadable() {
 }
 
 // Function to handle the black turn
-function setTurnBlack() {
+function setTurn() {
   if (whiteTurn.value) {
     whiteTimeSeconds.value += addingInterval.value;
     whiteTurn.value = false;
     blackTurn.value = true;
-  }
-}
-
-// Function to handle the white turn
-function setTurnWhite() {
-  if (blackTurn.value) {
+  } else if (blackTurn.value) {
     blackTimeSeconds.value += addingInterval.value;
     whiteTurn.value = true;
     blackTurn.value = false;
@@ -162,13 +181,22 @@ function start() {
   blackTimeSeconds.value = selectedTimeSeconds.value
   setTimeReadable();
   started.value = true;
+  over.value = false;
   timerInterval = setInterval(() => {
     if (blackTurn.value) {
       blackTimeSeconds.value--;
       setTimeReadable();
+      if (blackTimeSeconds.value <= 0) {
+        console.log("Black Lose");
+        gameOver();
+      }
     } else if (whiteTurn.value) {
       whiteTimeSeconds.value--;
       setTimeReadable();
+      if (whiteTimeSeconds.value <= 0) {
+        console.log("White Lose");
+        gameOver();
+      }
     }
   }, 1000);
 }
@@ -176,6 +204,7 @@ function start() {
 // Stop timer
 function stop() {
   started.value = false;
+  over.value = true;
   clearInterval(timerInterval);
 }
 
@@ -191,19 +220,27 @@ onMounted(() => {
 
 <style lang="css" scoped>
 .activeWhite {
-  @apply text-black bg-white text-center text-3xl font-bold font-mono h-52 m-4 border-gray-500 border-solid border-2 col-span-3 mx-96;
+  @apply text-black bg-white text-center text-3xl font-bold font-mono h-52 mx-2 sm:mx-3 md:mx-4 lg:mx-4 xl:mx-6 my-4 border-gray-500 border-solid border-2 col-span-3;
 }
 
 .activeBlack {
-  @apply text-white bg-black text-center text-3xl font-bold font-mono h-60 m-4 border-gray-500 border-solid border-2 col-span-3 mx-96;
+  @apply text-white bg-black text-center text-3xl font-bold font-mono h-60 mx-2 sm:mx-3 md:mx-4 lg:mx-4 xl:mx-6 my-4 border-gray-500 border-solid border-2 col-span-3;
 }
 
 .inactiveWhite {
-  @apply text-black bg-white bg-opacity-50 text-center text-2xl font-bold font-mono h-60 m-4 border-gray-500 border-solid border-2 col-span-3 mx-96;
+  @apply text-black bg-white bg-opacity-50 text-center text-2xl font-bold font-mono h-60 mx-2 sm:mx-3 md:mx-4 lg:mx-4 xl:mx-6 my-4 border-gray-500 border-solid border-2 col-span-3;
 }
 
 .inactiveBlack {
-  @apply text-white bg-black bg-opacity-50 text-center text-2xl font-bold font-mono h-52 m-4 border-gray-500 border-solid border-2 col-span-3 mx-96;
+  @apply text-white bg-black bg-opacity-50 text-center text-2xl font-bold font-mono h-52 mx-2 sm:mx-3 md:mx-4 lg:mx-4 xl:mx-6 my-4 border-gray-500 border-solid border-2 col-span-3;
+}
+
+.win {
+  @apply text-white bg-green-500 bg-opacity-50 text-center text-2xl font-bold font-mono h-52 mx-2 sm:mx-3 md:mx-4 lg:mx-4 xl:mx-6 my-4 border-gray-500 border-solid border-2 col-span-3;
+}
+
+.lose {
+  @apply text-black bg-red-500 bg-opacity-50 text-center text-2xl font-bold font-mono h-52 mx-2 sm:mx-3 md:mx-4 lg:mx-4 xl:mx-6 my-4 border-gray-500 border-solid border-2 col-span-3;
 }
 
 select {
