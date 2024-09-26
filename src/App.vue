@@ -7,7 +7,7 @@
     </h1>
 
     <label
-      class="text-center text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold font-mono p-6 border-gray-500 border-solid border-2 col-start-1 row-start-2 self-end"
+      class="text-center text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold font-mono p-4 sm:p-5 md:p-6 lg:p-6 xl:p-8 border-gray-500 border-solid border-2 col-start-1 row-start-2 self-end"
       for="set-time-seconds"
       v-if="!started"
     >
@@ -29,7 +29,7 @@
 
     <!-- Dropdown to change addingInterval -->
     <label
-      class="text-center text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold font-mono p-6 border-gray-500 border-solid border-2 col-start-3 row-start-2 self-end"
+      class="text-center text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold font-mono p-4 sm:p-5 md:p-6 lg:p-6 xl:p-8 border-gray-500 border-solid border-2 col-start-3 row-start-2 self-end"
       for="interval-select"
       v-if="!started"
     >
@@ -67,11 +67,27 @@
     </button>
 
     <button
-      class="text-center text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold font-mono p-6 mx-5 border-gray-500 border-solid border-2"
+      class="text-center text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold font-mono p-4 sm:p-5 md:p-6 lg:p-6 xl:p-8 border-gray-500 border-solid border-2"
       @click="stop"
       v-if="started"
     >
       Back
+    </button>
+
+    <button
+      class="text-center text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold font-mono p-4 sm:p-5 md:p-6 lg:p-6 xl:p-8 border-gray-500 border-solid border-2 col-start-3"
+      @click="pause"
+      v-if="started && !paused"
+    >
+      Pause
+    </button>
+
+    <button
+      class="text-center text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold font-mono p-4 sm:p-5 md:p-6 lg:p-6 xl:p-8 border-gray-500 border-solid border-2 col-start-3"
+      @click="resume"
+      v-if="started && paused"
+    >
+      Resume
     </button>
 
     <button
@@ -103,6 +119,7 @@ const blackTimeReadable = ref("00:00:00");
 const whiteTimeReadable = ref("00:00:00");
 const addingInterval = ref(10);
 
+const paused = ref(false);
 const selectedTimeSeconds = ref(900);
 
 const activeWhite = ref("activeWhite");
@@ -182,6 +199,9 @@ function start() {
   setTimeReadable();
   started.value = true;
   over.value = false;
+
+  whiteTurn.value = true;
+  blackTurn.value = false;
   timerInterval = setInterval(() => {
     if (blackTurn.value) {
       blackTimeSeconds.value--;
@@ -204,6 +224,30 @@ function stop() {
   started.value = false;
   over.value = true;
   clearInterval(timerInterval);
+}
+
+function pause() {
+  paused.value = true;
+  clearInterval(timerInterval);
+}
+
+function resume() {
+  paused.value = false;
+  timerInterval = setInterval(() => {
+    if (blackTurn.value) {
+      blackTimeSeconds.value--;
+      setTimeReadable();
+      if (blackTimeSeconds.value <= 0) {
+        gameOver();
+      }
+    } else if (whiteTurn.value) {
+      whiteTimeSeconds.value--;
+      setTimeReadable();
+      if (whiteTimeSeconds.value <= 0) {
+        gameOver();
+      }
+    }
+  }, 1000);
 }
 
 // Close dropdown
