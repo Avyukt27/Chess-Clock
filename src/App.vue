@@ -1,6 +1,6 @@
 <template>
   <div
-    class="min-h-screen bg-slate-100 text-black dark:bg-slate-900 dark:text-white grid grid-cols-3 grid-rows-[max-content_1fr] justify-center items-center grid-flow-row"
+    class="min-h-screen p-4 bg-slate-100 text-black dark:bg-slate-900 dark:text-white grid grid-cols-3 grid-rows-[max-content_1fr] justify-center items-center grid-flow-row"
   >
     <h1 class="text-center text-3xl font-bold p-4 col-span-3" v-show="!started">
       Welcome to the Chess Clock
@@ -218,27 +218,27 @@ onMounted(() => {
 
 <style lang="css" scoped>
 .activeWhite {
-  @apply text-black bg-white text-center text-3xl font-bold font-mono h-52 mx-2 sm:mx-3 md:mx-4 lg:mx-4 xl:mx-6 my-4 border-gray-500 border-solid border-2 col-span-3;
+  @apply text-black bg-white text-center text-3xl font-bold font-mono h-52 mx-2 sm:mx-3 md:mx-4 lg:mx-4 xl:mx-6 border-gray-500 border-solid border-2 col-span-3;
 }
 
 .activeBlack {
-  @apply text-white bg-black text-center text-3xl font-bold font-mono h-60 mx-2 sm:mx-3 md:mx-4 lg:mx-4 xl:mx-6 my-4 border-gray-500 border-solid border-2 col-span-3;
+  @apply text-white bg-black text-center text-3xl font-bold font-mono h-60 mx-2 sm:mx-3 md:mx-4 lg:mx-4 xl:mx-6 border-gray-500 border-solid border-2 col-span-3;
 }
 
 .inactiveWhite {
-  @apply text-black bg-white bg-opacity-50 text-center text-2xl font-bold font-mono h-60 mx-2 sm:mx-3 md:mx-4 lg:mx-4 xl:mx-6 my-4 border-gray-500 border-solid border-2 col-span-3;
+  @apply text-black bg-white bg-opacity-50 text-center text-2xl font-bold font-mono h-60 mx-2 sm:mx-3 md:mx-4 lg:mx-4 xl:mx-6 border-gray-500 border-solid border-2 col-span-3;
 }
 
 .inactiveBlack {
-  @apply text-white bg-black bg-opacity-50 text-center text-2xl font-bold font-mono h-52 mx-2 sm:mx-3 md:mx-4 lg:mx-4 xl:mx-6 my-4 border-gray-500 border-solid border-2 col-span-3;
+  @apply text-white bg-black bg-opacity-50 text-center text-2xl font-bold font-mono h-52 mx-2 sm:mx-3 md:mx-4 lg:mx-4 xl:mx-6 border-gray-500 border-solid border-2 col-span-3;
 }
 
 .win {
-  @apply text-white bg-green-500 bg-opacity-50 text-center text-2xl font-bold font-mono h-52 mx-2 sm:mx-3 md:mx-4 lg:mx-4 xl:mx-6 my-4 border-gray-500 border-solid border-2 col-span-3;
+  @apply text-white bg-green-500 bg-opacity-50 text-center text-2xl font-bold font-mono h-52 mx-2 sm:mx-3 md:mx-4 lg:mx-4 xl:mx-6 border-gray-500 border-solid border-2 col-span-3;
 }
 
 .lose {
-  @apply text-black bg-red-500 bg-opacity-50 text-center text-2xl font-bold font-mono h-52 mx-2 sm:mx-3 md:mx-4 lg:mx-4 xl:mx-6 my-4 border-gray-500 border-solid border-2 col-span-3;
+  @apply text-black bg-red-500 bg-opacity-50 text-center text-2xl font-bold font-mono h-52 mx-2 sm:mx-3 md:mx-4 lg:mx-4 xl:mx-6 border-gray-500 border-solid border-2 col-span-3;
 }
 
 select {
