@@ -62,6 +62,7 @@
       }"
       @click="setTurn"
       v-show="started"
+      :disabled="paused"
     >
       {{ blackTimeReadable }}
     </button>
@@ -97,6 +98,7 @@
       }"
       @click="setTurn"
       v-show="started"
+      :disabled="paused"
     >
       {{ whiteTimeReadable }}
     </button>
@@ -199,6 +201,7 @@ function start() {
   setTimeReadable();
   started.value = true;
   over.value = false;
+  paused.value = false;
 
   whiteTurn.value = true;
   blackTurn.value = false;
@@ -223,6 +226,7 @@ function start() {
 function stop() {
   started.value = false;
   over.value = true;
+  paused.value = false;
   clearInterval(timerInterval);
 }
 
