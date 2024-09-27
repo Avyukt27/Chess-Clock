@@ -139,6 +139,7 @@ const target = ref(null);
 
 let timerInterval = null;
 
+// Set the winner at game over
 function gameOver() {
   over.value = true;
   clearInterval(timerInterval);
@@ -230,11 +231,13 @@ function stop() {
   clearInterval(timerInterval);
 }
 
+// Pause timer
 function pause() {
   paused.value = true;
   clearInterval(timerInterval);
 }
 
+// Resume timer
 function resume() {
   paused.value = false;
   timerInterval = setInterval(() => {
